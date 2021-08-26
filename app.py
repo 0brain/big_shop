@@ -14,3 +14,12 @@ db = SQLAlchemy(app)
 @app.route('/')
 def index():
     return "Is it visible?"
+
+
+@app.route('/admin/add')
+def add():
+    return render_template('admin/add-product.html', admin=True)
+
+
+if __name__ == '__main__':
+    app.run()
