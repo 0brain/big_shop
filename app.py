@@ -1,13 +1,23 @@
 from flask import Flask, render_template, redirect, url_for
 from flask_sqlalchemy import SQLAlchemy
 from flask_migrate import Migrate
+from flask_wtf import FlaskForm
+from wtforms import StringField, IntegerField, TextAreaField
+from flask_wtf.file import FileField, FileAllowed
+
+from flask_uploads import UploadSet, configure_uploads, IMAGES  # pip install Flask-Reuploaded
 
 app = Flask(__name__)
 
+photos = UploadSet('photos', IMAGES)
+
+app.config['UPLOADED_PHOTOS_DEST'] = 'static/img'
 app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///assortment.db'
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 app.config['DEBUG'] = True
 app.config['SECRET_KEY'] = 'mysecret'
+
+configure_uploads(app, photos)
 
 db = SQLAlchemy(app)
 migrate = Migrate(app, db)
@@ -22,14 +32,34 @@ class Product(db.Model):
     image = db.Column(db.String(100))
 
 
+class AddProduct(FlaskForm):
+    name = StringField('Name')
+    price = IntegerField('Price')
+    stock = IntegerField('Stock')
+    description = TextAreaField('Description')
+    image = FileField('Image', validators=[FileAllowed(IMAGES, 'Only images are accepted.')])
+
+
 @app.route('/')
 def index():
     return "Is it visible?"
 
 
-@app.route('/admin/add')
+@app.route('/admin/add', methods=['GET', 'POST'])
 def add():
-    return render_template('admin/add-product.html', admin=True)
+    form = AddProduct()
+
+    if form.validate_on_submit():
+        image_url = url_for("static", filename=f"img/{photos.save(form.image.data)}")
+
+        new_product = Product(name=form.name.data, price=form.price.data, stock=form.stock.data, description=form.description.data, image=image_url)
+
+        db.session.add(new_product)
+        db.session.commit()
+
+        return redirect(url_for("add"))
+
+    return render_template('admin/add-product.html', admin=True, form=form)
 
 
 if __name__ == '__main__':
