@@ -45,6 +45,12 @@ def index():
     return render_template('index.html')
 
 
+@app.route('/admin')
+def admin():
+    products = Product.query.all()
+    return render_template('admin/index.html', admin=True, products=products)
+
+
 @app.route('/admin/add', methods=['GET', 'POST'])
 def add():
     form = AddProduct()
