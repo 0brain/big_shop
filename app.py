@@ -42,7 +42,7 @@ class AddProduct(FlaskForm):
 
 @app.route('/')
 def index():
-    return "Is it visible?"
+    return render_template('index.html')
 
 
 @app.route('/admin/add', methods=['GET', 'POST'])
