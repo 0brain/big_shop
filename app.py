@@ -48,7 +48,8 @@ def index():
 
 @app.route('/product/<id>')
 def product(id):
-    return render_template("view-product.html, ")
+    product = Product.query.filter_by(id=id).first()
+    return render_template("view-product.html", product=product)
 
 
 
