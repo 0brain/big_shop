@@ -48,7 +48,8 @@ def index():
 @app.route('/admin')
 def admin():
     products = Product.query.all()
-    return render_template('admin/index.html', admin=True, products=products)
+    products_in_stock = Product.query.filter(Product.stock > 0).count()
+    return render_template('admin/index.html', admin=True, products=products, products_in_stock=products_in_stock)
 
 
 @app.route('/admin/add', methods=['GET', 'POST'])
