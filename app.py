@@ -42,7 +42,14 @@ class AddProduct(FlaskForm):
 
 @app.route('/')
 def index():
-    return render_template('index.html')
+    products = Product.query.all()
+    return render_template('index.html', products=products)
+
+
+@app.route('/product/<id>')
+def product(id):
+    return render_template("view-product.html, ")
+
 
 
 @app.route('/admin')
