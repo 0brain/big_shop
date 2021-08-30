@@ -40,6 +40,8 @@
 				<hr />
 				{{ product.description }}
 				<hr />
+
+				<form action="{{ url_for('add_to_cart') }}" method="POST">
                 {% if product.stock > 0 %}
 				<div class="row">
 					<div class="col-lg-4">
@@ -48,7 +50,10 @@
 								Quantity
 							</div>
 							<div class="col-lg-12">
-								<input type="number" name="number" id="inputColor" class="form-control" value="1" autocomplete="off" step="1" min="1">
+								{{ form.csrf_token }}
+
+								{{ form.quantity(class="form-control", type="number", step="1", min="1", max="product.stock", value="1") }}
+								{{ form.id(value=product.id) }}
 							</div>
 						</div>
 					</div>
@@ -57,11 +62,12 @@
 			</div>
 			<div class="panel-footer">
 				{% if product.stock > 0 %}
-				<button type="button" class="btn btn-primary">
+				<button type="submit" class="btn btn-primary">
 					<i class="glyphicon glyphicon-shopping-cart"></i> Add To Cart
 				</button>
 				{% endif %}
 			</div>
+			</form>
 		</div>
 
 

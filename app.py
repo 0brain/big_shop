@@ -2,7 +2,7 @@ from flask import Flask, render_template, redirect, url_for
 from flask_sqlalchemy import SQLAlchemy
 from flask_migrate import Migrate
 from flask_wtf import FlaskForm
-from wtforms import StringField, IntegerField, TextAreaField
+from wtforms import StringField, IntegerField, TextAreaField, HiddenField
 from flask_wtf.file import FileField, FileAllowed
 
 from flask_uploads import UploadSet, configure_uploads, IMAGES  # pip install Flask-Reuploaded
@@ -40,6 +40,11 @@ class AddProduct(FlaskForm):
     image = FileField('Image', validators=[FileAllowed(IMAGES, 'Only images are accepted.')])
 
 
+class AddToCart(FlaskForm):
+    quantity = IntegerField("Quantity")
+    id = HiddenField("ID")
+
+
 @app.route('/')
 def index():
     products = Product.query.all()
@@ -49,8 +54,19 @@ def index():
 @app.route('/product/<id>')
 def product(id):
     product = Product.query.filter_by(id=id).first()
-    return render_template("view-product.html", product=product)
+    form = AddToCart()
 
+    return render_template("view-product.html", product=product, form=form)
+
+
+@app.route('/add-to-cart', methods=["POST"])
+def add_to_cart():
+    form = AddToCart()
+
+    if form.validate_on_submit():
+        print(form.quantity.data)
+        print(form.id.data)
+    return redirect(url_for('index'))
 
 
 @app.route('/admin')
