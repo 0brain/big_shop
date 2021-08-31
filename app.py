@@ -1,4 +1,4 @@
-from flask import Flask, render_template, redirect, url_for
+from flask import Flask, render_template, redirect, url_for, session
 from flask_sqlalchemy import SQLAlchemy
 from flask_migrate import Migrate
 from flask_wtf import FlaskForm
@@ -61,12 +61,23 @@ def product(id):
 
 @app.route('/add-to-cart', methods=["POST"])
 def add_to_cart():
+    if 'cart' not in session:
+        session['cart'] = []
+
     form = AddToCart()
 
     if form.validate_on_submit():
-        print(form.quantity.data)
-        print(form.id.data)
+
+        session['cart'].append({"id" : form.id.data, 'quantity' : form.quantity.data})
+        session.modified = True
+
     return redirect(url_for('index'))
+
+
+@app.route('/cart')
+def cart():
+    print(session['cart'])
+    return render_template("cart.html")
 
 
 @app.route('/admin')
