@@ -59,6 +59,17 @@ def product(id):
     return render_template("view-product.html", product=product, form=form)
 
 
+@app.route('/quick-add/<id>', methods=["GET"])
+def quick_add(id):
+    if 'cart' not in session:
+        session['cart'] = []
+
+    session['cart'].append({"id": id, 'quantity': 1})
+    session.modified = True
+
+    return redirect(url_for('index'))
+
+
 @app.route('/add-to-cart', methods=["POST"])
 def add_to_cart():
     if 'cart' not in session:
