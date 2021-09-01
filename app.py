@@ -68,7 +68,7 @@ def add_to_cart():
 
     if form.validate_on_submit():
 
-        session['cart'].append({"id" : form.id.data, 'quantity' : form.quantity.data})
+        session['cart'].append({"id": form.id.data, 'quantity': form.quantity.data})
         session.modified = True
 
     return redirect(url_for('index'))
